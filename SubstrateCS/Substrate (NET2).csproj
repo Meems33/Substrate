@@ -57,6 +57,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\AlphaWorld.cs" />
@@ -69,6 +70,9 @@
     <Compile Include="Source\BetaRegionManager.cs" />
     <Compile Include="Source\Core\CompositeDataArray.cs" />
     <Compile Include="Source\Core\FusedDataArray.cs" />
+    <Compile Include="Source\ImportExport\XmlBase.cs" />
+    <Compile Include="Source\ImportExport\XmlDeserializer.cs" />
+    <Compile Include="Source\ImportExport\XmlSerializer.cs" />
     <Compile Include="Source\RegionChunkManager.cs" />
     <Compile Include="Source\BetaRegion.cs" />
     <Compile Include="Source\BetaWorld.cs" />
