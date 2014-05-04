@@ -7,7 +7,9 @@ using System.Xml.Serialization;
 using System.Xml;
 using System.Globalization;
 
-namespace Substrate.Nbt {
+using Substrate.Nbt;
+
+namespace Substrate.ImportExport {
 
     public class XmlDeserializer : XmlBase {
 

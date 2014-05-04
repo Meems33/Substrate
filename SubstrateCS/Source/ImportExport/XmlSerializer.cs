@@ -5,7 +5,9 @@ using System.IO;
 using System.Xml.Serialization;
 using System.Xml;
 
-namespace Substrate.Nbt {
+using Substrate.Nbt;
+
+namespace Substrate.ImportExport {
     /// <summary>
     /// Serializes TagNodes to XML
     /// </summary>
