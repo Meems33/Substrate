@@ -602,9 +602,24 @@ namespace Substrate.Nbt
         public NBTException (String msg, Exception innerException) : base(msg, innerException) { }
     }
 
-    public class InvalidNBTObjectException : Exception { }
+    public class InvalidNBTObjectException : Exception { 
+        public InvalidNBTObjectException() : base() { }
+        public InvalidNBTObjectException(string message) : base(message) { }
+        public InvalidNBTObjectException(string message, Exception innerException)
+            : base(message, innerException) { }
+    }
 
-    public class InvalidTagException : Exception { }
+    public class InvalidTagException : Exception { 
+        public InvalidTagException() : base() { }
+        public InvalidTagException(string message) : base(message) { }
+        public InvalidTagException(string message, Exception innerException)
+            : base(message, innerException) { }
+    }
 
-    public class InvalidValueException : Exception { }
+    public class InvalidValueException : Exception { 
+        public InvalidValueException() : base() { }
+        public InvalidValueException(string message) : base(message) { }
+        public InvalidValueException(string message, Exception innerException)
+            : base(message, innerException) { }
+    }
 }
