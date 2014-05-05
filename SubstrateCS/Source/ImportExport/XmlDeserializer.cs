@@ -128,7 +128,7 @@ namespace Substrate.ImportExport {
             }
         }
 
-        protected Tuple<string, TagNode> DeserializeList(XmlReader reader, out TagNodeList node, out string name) {
+        protected void DeserializeList(XmlReader reader, out TagNodeList node, out string name) {
             TagType type = getTagType(reader.Name);
 
             if (TagType.TAG_LIST != type) {
@@ -180,11 +180,9 @@ namespace Substrate.ImportExport {
                     node = new TagNodeList(innerTypeTag, gatheredTags);
                 }
             }
-
-            return new Tuple<string, TagNode>(name, node);
         }
 
-        protected Tuple<string, TagNode> DeserializeScalar(XmlReader reader, out TagNode node, out string name) {
+        protected void DeserializeScalar(XmlReader reader, out TagNode node, out string name) {
             // TODO add validation
 
             TagType type = getTagType(reader.Name);
@@ -347,8 +345,6 @@ namespace Substrate.ImportExport {
                 default:
                     throw new InvalidTagException();
             }
-
-            return new Tuple<string, TagNode>(name, node);
         }
 
         private string readTextElement(XmlReader reader) {
