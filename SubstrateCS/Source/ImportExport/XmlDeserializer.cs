@@ -36,7 +36,7 @@ namespace Substrate.ImportExport {
             return DeserializeStart(reader);
         }
 
-        private TagNode DeserializeStart(XmlReader reader) {
+        protected TagNode DeserializeStart(XmlReader reader) {
             TagNode node = null;
 
             int numChildren = 0;
@@ -48,17 +48,22 @@ namespace Substrate.ImportExport {
                 } else if (XmlNodeType.Element == reader.NodeType) {
                     TagType childType = getTagType(reader.Name);
 
+                    string outName;
                     
                     if (numChildren > 1) {
                         throw new InvalidTagException();
                     }
 
                     if (TagType.TAG_COMPOUND == childType) {
-                        node = DeserializeCompound(reader).Item2;
+                        TagNodeCompound tnc;
+                        DeserializeCompound(reader, out tnc, out outName);
+                        node = tnc;
                     } else if (TagType.TAG_LIST == childType) {
-                        node = DeserializeList(reader).Item2;
+                        TagNodeList tnl;
+                        DeserializeList(reader, out tnl, out outName);
+                        node = tnl;
                     } else {
-                        node = DeserializeScalar(reader).Item2;
+                        DeserializeScalar(reader, out node, out outName);
                     }
 
                     ++numChildren;
@@ -69,10 +74,7 @@ namespace Substrate.ImportExport {
         }
 
         // We just read a TAG_COMPOUND
-        private Tuple<string, TagNode> DeserializeCompound(XmlReader reader) {
-            TagNode node;
-            string name;
-
+        protected void DeserializeCompound(XmlReader reader, out TagNodeCompound node, out string name) {
             TagType type = getTagType(reader.Name);
 
             if (TagType.TAG_COMPOUND != type) {
@@ -84,7 +86,8 @@ namespace Substrate.ImportExport {
             if (reader.IsEmptyElement) {
                 node = new TagNodeCompound();
             } else {
-                List<Tuple<string, TagNode>> gatheredTags = new List<Tuple<string, TagNode>>();
+                List<string> gatheredNames = new List<String>();
+                List<TagNode> gatheredTags = new List<TagNode>();
 
                 while (!reader.EOF) {
                     reader.Read();
@@ -93,13 +96,23 @@ namespace Substrate.ImportExport {
                         // Child...
                         TagType childType = getTagType(reader.Name);
 
+                        TagNode outTag;
+                        string outName;
+
                         if (TagType.TAG_COMPOUND == childType) {
-                            gatheredTags.Add(DeserializeCompound(reader));
+                            TagNodeCompound tnc;
+                            DeserializeCompound(reader, out tnc, out outName);
+                            outTag = tnc;
                         } else if (TagType.TAG_LIST == childType) {
-                            gatheredTags.Add(DeserializeList(reader));
+                            TagNodeList tnl;
+                            DeserializeList(reader, out tnl, out outName);
+                            outTag = tnl;
                         } else {
-                            gatheredTags.Add(DeserializeScalar(reader));
+                            DeserializeScalar(reader, out outTag, out outName);
                         }
+
+                        gatheredTags.Add(outTag);
+                        gatheredNames.Add(outName);
                     } else if (XmlNodeType.EndElement == reader.NodeType) {
                         // Children consume their own end elements so this must be ours
                         reader.ReadEndElement();
@@ -107,20 +120,15 @@ namespace Substrate.ImportExport {
                     }
                 }
 
-                TagNodeCompound tnc = new TagNodeCompound();
+                node = new TagNodeCompound();
 
-                gatheredTags.ForEach(innerNode => tnc.Add(innerNode.Item1, innerNode.Item2));
-
-                node = tnc;
+                for (int i = 0; i < gatheredTags.Count; ++i) {
+                    node.Add(gatheredNames[i], gatheredTags[i]);
+                }
             }
-
-            return new Tuple<string, TagNode>(name, node);
         }
 
-        private Tuple<string, TagNode> DeserializeList(XmlReader reader) {
-            TagNode node;
-            string name;
-
+        protected Tuple<string, TagNode> DeserializeList(XmlReader reader, out TagNodeList node, out string name) {
             TagType type = getTagType(reader.Name);
 
             if (TagType.TAG_LIST != type) {
@@ -134,7 +142,7 @@ namespace Substrate.ImportExport {
             if (reader.IsEmptyElement) {
                 node = new TagNodeList(innerTypeTag);
             } else {
-                List<Tuple<string, TagNode>> gatheredTags = new List<Tuple<string, TagNode>>();
+                List<TagNode> gatheredTags = new List<TagNode>();
 
                 while (!reader.EOF) {
                     reader.Read();
@@ -143,13 +151,22 @@ namespace Substrate.ImportExport {
                         // Child...
                         TagType childType = getTagType(reader.Name);
 
+                        TagNode outTag;
+                        string outName;
+
                         if (TagType.TAG_COMPOUND == childType) {
-                            gatheredTags.Add(DeserializeCompound(reader));
+                            TagNodeCompound tnc;
+                            DeserializeCompound(reader, out tnc, out outName);
+                            outTag = tnc;
                         } else if (TagType.TAG_LIST == childType) {
-                            gatheredTags.Add(DeserializeList(reader));
+                            TagNodeList tnl;
+                            DeserializeList(reader, out tnl, out outName);
+                            outTag = tnl;
                         } else {
-                            gatheredTags.Add(DeserializeScalar(reader));
+                            DeserializeScalar(reader, out outTag, out outName);
                         }
+
+                        gatheredTags.Add(outTag);
                     } else if (XmlNodeType.EndElement == reader.NodeType) {
                         // Children consume their own end elements so this must be ours
                         reader.ReadEndElement();
@@ -157,28 +174,24 @@ namespace Substrate.ImportExport {
                     }
                 }
 
-                List<TagNode> listItems = new List<TagNode>();
-                gatheredTags.ForEach(innerNode => listItems.Add(innerNode.Item2));
-                
-                if (listItems == null) {
+                if (gatheredTags == null) {
                     node = new TagNodeList(innerTypeTag);
                 } else {
-                    node = new TagNodeList(innerTypeTag, listItems);
+                    node = new TagNodeList(innerTypeTag, gatheredTags);
                 }
             }
 
             return new Tuple<string, TagNode>(name, node);
         }
 
-        private Tuple<string, TagNode> DeserializeScalar(XmlReader reader) {
+        protected Tuple<string, TagNode> DeserializeScalar(XmlReader reader, out TagNode node, out string name) {
             // TODO add validation
 
             TagType type = getTagType(reader.Name);
 
             // Let's read the attr if it exists
-            string name = reader.GetAttribute("name");
+            name = reader.GetAttribute("name");
             string rawValue = readTextElement(reader);
-            TagNode node;
 
             // By this point we have read everything that we need
             // to read and our reader is pointing to the next element.

@@ -1,27 +1,21 @@
-﻿/*using Substrate.Nbt;
+﻿using Substrate.Nbt;
+using Substrate.ImportExport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+using System.Text;
 using System.Xml;
 using System.IO;
+using System;
 
 namespace XmlTester
 {
-    
-    
-    /// <summary>
-    ///This is a test class for XmlDeserializerTest and is intended
-    ///to contain all XmlDeserializerTest Unit Tests
-    ///</summary>
     [TestClass()]
     public class XmlDeserializerTest {
-
-
+        private XmlReader reader;
+        private MemoryStream inputStream;
+        private XmlDeserializer target { get { return (XmlDeserializer)wrapper.Target; } }
+        private PrivateObject wrapper;
         private TestContext testContextInstance;
 
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
         public TestContext TestContext {
             get {
                 return testContextInstance;
@@ -32,131 +26,55 @@ namespace XmlTester
         }
 
         #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
         //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
+        [TestInitialize()]
+        public void MyTestInitialize()
+        {
+            inputStream = new MemoryStream();
+            wrapper = new PrivateObject(typeof(XmlDeserializer));
+        }
+        
         //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
+        [TestCleanup()]
+        public void MyTestCleanup()
+        {
+            if (inputStream != null) {
+                inputStream.Close();
+            }
+
+            if (reader != null) {
+                reader.Close();
+            }
+        }
+        
         #endregion
 
+        private XmlReaderSettings createSettings() {
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.IgnoreProcessingInstructions = true;
 
-        /// <summary>
-        ///A test for XmlDeserializer Constructor
-        ///</summary>
-        [TestMethod()]
-        public void XmlDeserializerConstructorTest() {
-            XmlDeserializer target = new XmlDeserializer();
-            Assert.Inconclusive("TODO: Implement code to verify target");
+            return settings;
         }
 
-        /// <summary>
-        ///A test for Deserialize
-        ///</summary>
-        [TestMethod()]
-        public void DeserializeTest() {
-            XmlDeserializer target = new XmlDeserializer(); // TODO: Initialize to an appropriate value
-            XmlReader reader = null; // TODO: Initialize to an appropriate value
-            TagNode expected = null; // TODO: Initialize to an appropriate value
-            TagNode actual;
-            actual = target.Deserialize(reader);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+        private void setInput(string str) {
+            setInput(str, false);
         }
 
-        /// <summary>
-        ///A test for Deserialize
-        ///</summary>
-        [TestMethod()]
-        public void DeserializeTest1() {
-            XmlDeserializer target = new XmlDeserializer(); // TODO: Initialize to an appropriate value
-            Stream inputStream = null; // TODO: Initialize to an appropriate value
-            TagNode expected = null; // TODO: Initialize to an appropriate value
-            TagNode actual;
-            actual = target.Deserialize(inputStream);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
+        private void setInput(string str, bool readOne) {
+            if (reader != null) {
+                reader.Close();
+            }
 
-        /// <summary>
-        ///A test for DeserializeCompound
-        ///</summary>
-        [TestMethod()]
-        [DeploymentItem("Substrate.dll")]
-        public void DeserializeCompoundTest() {
-            XmlDeserializer_Accessor target = new XmlDeserializer_Accessor(); // TODO: Initialize to an appropriate value
-            XmlReader reader = null; // TODO: Initialize to an appropriate value
-            Tuple<string, TagNode> expected = null; // TODO: Initialize to an appropriate value
-            Tuple<string, TagNode> actual;
-            actual = target.DeserializeCompound(reader);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
+            inputStream.SetLength(0);
+            byte[] data = Encoding.UTF8.GetBytes(str);
+            inputStream.Write(data, 0, data.Length);
+            inputStream.Position = 0;
 
-        /// <summary>
-        ///A test for DeserializeList
-        ///</summary>
-        [TestMethod()]
-        [DeploymentItem("Substrate.dll")]
-        public void DeserializeListTest() {
-            XmlDeserializer_Accessor target = new XmlDeserializer_Accessor(); // TODO: Initialize to an appropriate value
-            XmlReader reader = null; // TODO: Initialize to an appropriate value
-            Tuple<string, TagNode> expected = null; // TODO: Initialize to an appropriate value
-            Tuple<string, TagNode> actual;
-            actual = target.DeserializeList(reader);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
+            reader = XmlReader.Create(inputStream, createSettings());
 
-        /// <summary>
-        ///A test for DeserializeScalar
-        ///</summary>
-        [TestMethod()]
-        [DeploymentItem("Substrate.dll")]
-        public void DeserializeScalarTest() {
-            XmlDeserializer_Accessor target = new XmlDeserializer_Accessor(); // TODO: Initialize to an appropriate value
-            XmlReader reader = null; // TODO: Initialize to an appropriate value
-            Tuple<string, TagNode> expected = null; // TODO: Initialize to an appropriate value
-            Tuple<string, TagNode> actual;
-            actual = target.DeserializeScalar(reader);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
-
-        /// <summary>
-        ///A test for DeserializeStart
-        ///</summary>
-        [TestMethod()]
-        [DeploymentItem("Substrate.dll")]
-        public void DeserializeStartTest() {
-            XmlDeserializer_Accessor target = new XmlDeserializer_Accessor(); // TODO: Initialize to an appropriate value
-            XmlReader reader = null; // TODO: Initialize to an appropriate value
-            TagNode expected = null; // TODO: Initialize to an appropriate value
-            TagNode actual;
-            actual = target.DeserializeStart(reader);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            if (readOne) {
+                reader.Read();
+            }
         }
 
         /// <summary>
@@ -164,14 +82,40 @@ namespace XmlTester
         ///</summary>
         [TestMethod()]
         [DeploymentItem("Substrate.dll")]
-        public void readTextElementTest() {
-            XmlDeserializer_Accessor target = new XmlDeserializer_Accessor(); // TODO: Initialize to an appropriate value
-            XmlReader reader = null; // TODO: Initialize to an appropriate value
-            string expected = string.Empty; // TODO: Initialize to an appropriate value
-            string actual;
-            actual = target.readTextElement(reader);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+        public void DeserializeTagEndTest() {
+            string name;
+            TagNode result;
+            string input;
+
+            input = "<TAG_END />";
+
+            setInput(input, true);
+            DeserializeScalar(reader, out result, out name);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(typeof(TagNodeNull), result.GetType());
+            Assert.IsNull(name);
+        }
+
+        private void DeserializeCompound(XmlReader reader, out TagNodeCompound tag, out string name) {
+            object[] args = new object[] { reader, null, null };
+            wrapper.Invoke("DeserializeCompound", args);
+            tag = args[1] as TagNodeCompound;
+            name = args[2] as string;
+        }
+
+        private void DeserializeList(XmlReader reader, out TagNodeList tag, out string name) {
+            object[] args = new object[] { reader, null, null };
+            wrapper.Invoke("DeserializeList", args);
+            tag = args[1] as TagNodeList;
+            name = args[2] as string;
+        }
+
+        private void DeserializeScalar(XmlReader reader, out TagNode tag, out string name) {
+            object[] args = new object[] { reader, null, null };
+            wrapper.Invoke("DeserializeScalar", args);
+            tag = args[1] as TagNode;
+            name = args[2] as string;
         }
     }
-}*/
+}

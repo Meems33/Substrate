@@ -51,7 +51,7 @@ namespace Substrate.ImportExport {
             SerializeStart(writer, tag);
         }
 
-        private void SerializeStart(XmlWriter writer, TagNode tag) {
+        protected void SerializeStart(XmlWriter writer, TagNode tag) {
             bool writeHeader = !writer.Settings.OmitXmlDeclaration;
 
             if (writeHeader) {
@@ -74,7 +74,7 @@ namespace Substrate.ImportExport {
             }
         }
 
-        private void SerializeCompound(XmlWriter writer, TagNodeCompound tag, string name) {
+        protected void SerializeCompound(XmlWriter writer, TagNodeCompound tag, string name) {
             writer.WriteStartElement(getTagName(tag));
 
             if (name != null) {
@@ -97,7 +97,7 @@ namespace Substrate.ImportExport {
             writer.WriteEndElement();
         }
 
-        private void SerializeList(XmlWriter writer, TagNodeList tag, string name) {
+        protected void SerializeList(XmlWriter writer, TagNodeList tag, string name) {
             writer.WriteStartElement(getTagName(tag));
 
             if (name != null) {
@@ -120,7 +120,7 @@ namespace Substrate.ImportExport {
             writer.WriteEndElement();
         }
 
-        private void SerializeScalar(XmlWriter writer, TagNode tag, string name) {
+        protected void SerializeScalar(XmlWriter writer, TagNode tag, string name) {
             writer.WriteStartElement(getTagName(tag));
 
             if (name != null) {

@@ -14,11 +14,9 @@ namespace XmlTester
         private XmlWriter writer;
         private StringWriter output;
         private TestContext testContextInstance;
-        
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
+        private XmlSerializer target { get { return (XmlSerializer)wrapper.Target; } }
+        private PrivateObject wrapper;
+
         public TestContext TestContext {
             get {
                 return testContextInstance;
@@ -36,6 +34,7 @@ namespace XmlTester
         {
             output = new StringWriter();
             writer = XmlWriter.Create(output, createSettings());
+            wrapper = new PrivateObject(typeof(XmlSerializer));
         }
         
         //Use TestCleanup to run code after each test has run
@@ -75,8 +74,6 @@ namespace XmlTester
         [TestMethod()]
         [DeploymentItem("Substrate.dll")]
         public void SerializeStartTest() {
-            XmlSerializer_Accessor target = new XmlSerializer_Accessor();
-
             TagNode node;
             string result;
             string expected;
@@ -85,7 +82,7 @@ namespace XmlTester
             node = new TagNodeByte(2);
             expected = "<TAG_BYTE>2</TAG_BYTE>";
 
-            target.SerializeStart(writer, node);
+            SerializeStart(writer, node);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -96,7 +93,7 @@ namespace XmlTester
             
             expected = "<TAG_COMPOUND><TAG_DOUBLE name=\"name2\">4.3</TAG_DOUBLE></TAG_COMPOUND>";
 
-            target.SerializeStart(writer, node);
+            SerializeStart(writer, node);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -106,7 +103,7 @@ namespace XmlTester
             ((TagNodeList)node).Add(new TagNodeShort(3));
             expected = "<TAG_LIST type=\"TAG_SHORT\"><TAG_SHORT>3</TAG_SHORT></TAG_LIST>";
 
-            target.SerializeStart(writer, node);
+            SerializeStart(writer, node);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -115,8 +112,6 @@ namespace XmlTester
         [TestMethod()]
         [DeploymentItem("Substrate.dll")]
         public void SerializeTagEndTest() {
-            XmlSerializer_Accessor target = new XmlSerializer_Accessor();
-
             TagNode node;
             string name;
             string result;
@@ -127,7 +122,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_END />";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -137,7 +132,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_END name=\"name1\" />";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -146,8 +141,6 @@ namespace XmlTester
         [TestMethod()]
         [DeploymentItem("Substrate.dll")]
         public void SerializeTagByteTest() {
-            XmlSerializer_Accessor target = new XmlSerializer_Accessor();
-
             TagNode node;
             string name;
             string result;
@@ -158,7 +151,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_BYTE>0</TAG_BYTE>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -168,7 +161,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_BYTE>27</TAG_BYTE>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -178,7 +171,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_BYTE name=\"name1\">27</TAG_BYTE>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -187,7 +180,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_BYTE name=\"name1\">255</TAG_BYTE>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -197,7 +190,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_BYTE name=\"name1\">00</TAG_BYTE>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -205,7 +198,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_BYTE name=\"name1\">02</TAG_BYTE>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -213,7 +206,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_BYTE name=\"name1\">1B</TAG_BYTE>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
         }
@@ -221,8 +214,6 @@ namespace XmlTester
         [TestMethod()]
         [DeploymentItem("Substrate.dll")]
         public void SerializeTagShortTest() {
-            XmlSerializer_Accessor target = new XmlSerializer_Accessor();
-
             TagNode node;
             string name;
             string result;
@@ -233,7 +224,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_SHORT>0</TAG_SHORT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -242,7 +233,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_SHORT>27</TAG_SHORT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -252,7 +243,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_SHORT name=\"name1\">27</TAG_SHORT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -261,7 +252,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_SHORT name=\"name1\">32767</TAG_SHORT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -269,7 +260,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_SHORT name=\"name1\">-32768</TAG_SHORT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -279,7 +270,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_SHORT name=\"name1\">0000</TAG_SHORT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -287,7 +278,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_SHORT name=\"name1\">0002</TAG_SHORT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -295,7 +286,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_SHORT name=\"name1\">001B</TAG_SHORT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -303,7 +294,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_SHORT name=\"name1\">FEFE</TAG_SHORT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
         }
@@ -311,8 +302,6 @@ namespace XmlTester
         [TestMethod()]
         [DeploymentItem("Substrate.dll")]
         public void SerializeTagIntTest() {
-            XmlSerializer_Accessor target = new XmlSerializer_Accessor();
-
             TagNode node;
             string name;
             string result;
@@ -323,7 +312,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_INT>0</TAG_INT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -332,7 +321,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_INT>27</TAG_INT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -342,7 +331,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_INT name=\"name1\">27</TAG_INT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -351,7 +340,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_INT name=\"name1\">2147483647</TAG_INT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -359,7 +348,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_INT name=\"name1\">-2147483648</TAG_INT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -369,7 +358,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_INT name=\"name1\">00000000</TAG_INT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -377,7 +366,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_INT name=\"name1\">00000002</TAG_INT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -385,7 +374,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_INT name=\"name1\">0000001B</TAG_INT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -393,7 +382,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_INT name=\"name1\">FFFFFEFE</TAG_INT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
         }
@@ -401,8 +390,6 @@ namespace XmlTester
         [TestMethod()]
         [DeploymentItem("Substrate.dll")]
         public void SerializeTagLongTest() {
-            XmlSerializer_Accessor target = new XmlSerializer_Accessor();
-
             TagNode node;
             string name;
             string result;
@@ -413,7 +400,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_LONG>0</TAG_LONG>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -422,7 +409,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_LONG>27</TAG_LONG>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -432,7 +419,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_LONG name=\"name1\">27</TAG_LONG>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -441,7 +428,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_LONG name=\"name1\">9223372036854775807</TAG_LONG>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -449,7 +436,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_LONG name=\"name1\">-9223372036854775808</TAG_LONG>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -459,7 +446,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_LONG name=\"name1\">0000000000000000</TAG_LONG>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -467,7 +454,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_LONG name=\"name1\">0000000000000002</TAG_LONG>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -475,7 +462,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_LONG name=\"name1\">000000000000001B</TAG_LONG>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -483,7 +470,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_LONG name=\"name1\">FFFFFFFFFFFFFEFE</TAG_LONG>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
         }
@@ -491,8 +478,6 @@ namespace XmlTester
         [TestMethod()]
         [DeploymentItem("Substrate.dll")]
         public void SerializeTagFloatTest() {
-            XmlSerializer_Accessor target = new XmlSerializer_Accessor();
-
             TagNode node;
             string name;
             string result;
@@ -503,7 +488,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_FLOAT>0</TAG_FLOAT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -512,7 +497,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_FLOAT>1.12</TAG_FLOAT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -522,7 +507,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_FLOAT name=\"name1\">1.12</TAG_FLOAT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -531,7 +516,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_FLOAT name=\"name1\">-1.25</TAG_FLOAT>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
         }
@@ -539,8 +524,6 @@ namespace XmlTester
         [TestMethod()]
         [DeploymentItem("Substrate.dll")]
         public void SerializeTagDoubleTest() {
-            XmlSerializer_Accessor target = new XmlSerializer_Accessor();
-
             TagNode node;
             string name;
             string result;
@@ -551,7 +534,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_DOUBLE>0</TAG_DOUBLE>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -560,7 +543,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_DOUBLE>1.12</TAG_DOUBLE>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -570,7 +553,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_DOUBLE name=\"name1\">1.12</TAG_DOUBLE>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -579,7 +562,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_DOUBLE name=\"name1\">-1.25</TAG_DOUBLE>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
         }
@@ -587,7 +570,6 @@ namespace XmlTester
         [TestMethod()]
         [DeploymentItem("Substrate.dll")]
         public void SerializeTagByteArrayTest() {
-            XmlSerializer_Accessor target = new XmlSerializer_Accessor();
             target.ArraySep = ' ';
             target.ByteArrayAsHex = false;
 
@@ -601,7 +583,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_BYTE_ARRAY />";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -610,7 +592,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_BYTE_ARRAY>0</TAG_BYTE_ARRAY>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -619,7 +601,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_BYTE_ARRAY>0 1 2 3</TAG_BYTE_ARRAY>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -629,7 +611,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_BYTE_ARRAY name=\"name1\">4 5</TAG_BYTE_ARRAY>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -639,7 +621,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_BYTE_ARRAY />";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -647,7 +629,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_BYTE_ARRAY name=\"name1\">00 04 1B</TAG_BYTE_ARRAY>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
         }
@@ -655,7 +637,6 @@ namespace XmlTester
         [TestMethod()]
         [DeploymentItem("Substrate.dll")]
         public void SerializeTagStringTest() {
-            XmlSerializer_Accessor target = new XmlSerializer_Accessor();
             target.ArraySep = ' ';
             target.IntArrayAsHex = false;
 
@@ -669,7 +650,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_STRING></TAG_STRING>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -678,7 +659,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_STRING />";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -687,7 +668,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_STRING></TAG_STRING>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -696,7 +677,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_STRING>efg</TAG_STRING>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -706,7 +687,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_STRING name=\"name1\">hij</TAG_STRING>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
         }
@@ -714,8 +695,6 @@ namespace XmlTester
         [TestMethod()]
         [DeploymentItem("Substrate.dll")]
         public void SerializeTagListTest() {
-            XmlSerializer_Accessor target = new XmlSerializer_Accessor();
-
             TagNodeList node;
             string name;
             string result;
@@ -726,7 +705,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_LIST type=\"TAG_BYTE\" />";
 
-            target.SerializeList(writer, node, name);
+            SerializeList(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -734,7 +713,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_LIST type=\"TAG_BYTE\" />";
 
-            target.SerializeList(writer, node, name);
+            SerializeList(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -748,7 +727,7 @@ namespace XmlTester
                       + "<TAG_BYTE>5</TAG_BYTE>"
                      + "</TAG_LIST>";
 
-            target.SerializeList(writer, node, name);
+            SerializeList(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -761,7 +740,7 @@ namespace XmlTester
                       + "<TAG_BYTE>4</TAG_BYTE>"
                      + "</TAG_LIST>";
 
-            target.SerializeList(writer, node, name);
+            SerializeList(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -777,7 +756,7 @@ namespace XmlTester
                       + "</TAG_LIST>"
                      + "</TAG_LIST>";
 
-            target.SerializeList(writer, node, name);
+            SerializeList(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -794,7 +773,7 @@ namespace XmlTester
                       + "</TAG_COMPOUND>"
                      + "</TAG_LIST>";
 
-            target.SerializeList(writer, node, name);
+            SerializeList(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -803,8 +782,6 @@ namespace XmlTester
         [TestMethod()]
         [DeploymentItem("Substrate.dll")]
         public void SerializeTagCompoundTest() {
-            XmlSerializer_Accessor target = new XmlSerializer_Accessor();
-
             TagNodeCompound node;
             string name;
             string result;
@@ -815,7 +792,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_COMPOUND />";
 
-            target.SerializeCompound(writer, node, name);
+            SerializeCompound(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -825,7 +802,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_COMPOUND><TAG_BYTE name=\"name2\">1</TAG_BYTE></TAG_COMPOUND>";
 
-            target.SerializeCompound(writer, node, name);
+            SerializeCompound(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -838,7 +815,7 @@ namespace XmlTester
                 + "<TAG_BYTE name=\"name2\">1</TAG_BYTE>"
                 + "<TAG_BYTE name=\"name3\">2</TAG_BYTE></TAG_COMPOUND>";
 
-            target.SerializeCompound(writer, node, name);
+            SerializeCompound(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -853,7 +830,7 @@ namespace XmlTester
                 + "<TAG_LIST name=\"name2\" type=\"TAG_BYTE\"><TAG_BYTE>2</TAG_BYTE></TAG_LIST>"
                 + "<TAG_BYTE name=\"name3\">3</TAG_BYTE></TAG_COMPOUND>";
 
-            target.SerializeCompound(writer, node, name);
+            SerializeCompound(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -873,7 +850,7 @@ namespace XmlTester
                 + "<TAG_FLOAT name=\"name3\">3.2</TAG_FLOAT>"
                 + "</TAG_COMPOUND>";
 
-            target.SerializeCompound(writer, node, name);
+            SerializeCompound(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
         }
@@ -881,7 +858,6 @@ namespace XmlTester
         [TestMethod()]
         [DeploymentItem("Substrate.dll")]
         public void SerializeTagIntArrayTest() {
-            XmlSerializer_Accessor target = new XmlSerializer_Accessor();
             target.ArraySep = ' ';
             target.IntArrayAsHex = false;
 
@@ -895,7 +871,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_INT_ARRAY />";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -904,7 +880,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_INT_ARRAY>0</TAG_INT_ARRAY>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -913,7 +889,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_INT_ARRAY>0 1 2 3</TAG_INT_ARRAY>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
 
             Assert.AreEqual(expected, result);
@@ -923,7 +899,7 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_INT_ARRAY name=\"name1\">4 5</TAG_INT_ARRAY>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -933,7 +909,7 @@ namespace XmlTester
             name = null;
             expected = "<TAG_INT_ARRAY />";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
 
@@ -941,9 +917,25 @@ namespace XmlTester
             name = "name1";
             expected = "<TAG_INT_ARRAY name=\"name1\">00000000 00000004 0000001B</TAG_INT_ARRAY>";
 
-            target.SerializeScalar(writer, node, name);
+            SerializeScalar(writer, node, name);
             result = getResult();
             Assert.AreEqual(expected, result);
+        }
+
+        private void SerializeStart(XmlWriter writer, TagNode node) {
+            wrapper.Invoke("SerializeStart", new object[] { writer, node });
+        }
+
+        private void SerializeList(XmlWriter writer, TagNode node, string name) {
+            wrapper.Invoke("SerializeList", new object[] { writer, node, name });
+        }
+
+        private void SerializeCompound(XmlWriter writer, TagNode node, string name) {
+            wrapper.Invoke("SerializeCompound", new object[] { writer, node, name });
+        }
+
+        private void SerializeScalar(XmlWriter writer, TagNode node, string name) {
+            wrapper.Invoke("SerializeScalar", new object[] { writer, node, name });
         }
     }
 }

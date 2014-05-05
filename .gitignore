@@ -1,6 +1,7 @@
 **/Debug/*
 **/bin/*
 **/obj/*
+**/TestResults/*
 *.suo
 SubstrateCS/Release/
 *.sdf
