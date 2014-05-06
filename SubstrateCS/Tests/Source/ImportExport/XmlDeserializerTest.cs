@@ -89,6 +89,7 @@ namespace XmlTester
             node = new TagNodeByte(2);
             xml = "<TAG_BYTE>2</TAG_BYTE>";
 
+            setInput(xml, false);
             result = DeserializeStart(reader);
             AssertEqual(node, result);
 
@@ -98,7 +99,8 @@ namespace XmlTester
 
             xml = "<TAG_COMPOUND><TAG_DOUBLE name=\"name2\">4.3</TAG_DOUBLE></TAG_COMPOUND>";
 
-            DeserializeStart(reader);
+            setInput(xml, false);
+            result = DeserializeStart(reader);
             AssertEqual(node, result);
 
             // List
@@ -106,7 +108,8 @@ namespace XmlTester
             ((TagNodeList)node).Add(new TagNodeShort(3));
             xml = "<TAG_LIST type=\"TAG_SHORT\"><TAG_SHORT>3</TAG_SHORT></TAG_LIST>";
 
-            DeserializeStart(reader);
+            setInput(xml, false);
+            result = DeserializeStart(reader);
             AssertEqual(node, result);
         }
 
@@ -354,7 +357,7 @@ namespace XmlTester
                 // OK
             } else {
                 if (expected.GetType() != actual.GetType()) {
-                    Assert.Fail();
+                    Assert.Fail("Expected type " + expected.GetType() + " but was " + actual.GetType());
                 }
 
                 if (expected is TagNodeNull) {
@@ -396,10 +399,16 @@ namespace XmlTester
                     TagNodeByteArray tn1 = expected as TagNodeByteArray;
                     TagNodeByteArray tn2 = actual as TagNodeByteArray;
 
-                    Assert.AreEqual(tn1.Data, tn2.Data);
-                } else if (expected is TagNodeIntArray) {
-                    TagNodeIntArray tn1 = expected as TagNodeIntArray;
-                    TagNodeIntArray tn2 = actual as TagNodeIntArray;
+                    Assert.IsFalse((tn1.Data == null) != (tn2.Data == null));
+                    if (tn1.Data != null && tn2.Data != null) {
+                        Assert.AreEqual(tn1.Length, tn2.Length);
+                        for (int i = 0; i < tn1.Length; ++i) {
+                            Assert.AreEqual(tn1.Data[i], tn2.Data[i]);
+                        }
+                    }
+                } else if (expected is TagNodeString) {
+                    TagNodeString tn1 = expected as TagNodeString;
+                    TagNodeString tn2 = actual as TagNodeString;
 
                     Assert.AreEqual(tn1.Data, tn2.Data);
                 } else if (expected is TagNodeList) {
@@ -428,6 +437,17 @@ namespace XmlTester
 
                         Assert.AreEqual(it1.Current.Key, it2.Current.Key);
                         AssertEqual(it1.Current.Value, it2.Current.Value);
+                    }
+                } else if (expected is TagNodeIntArray) {
+                    TagNodeIntArray tn1 = expected as TagNodeIntArray;
+                    TagNodeIntArray tn2 = actual as TagNodeIntArray;
+
+                    Assert.IsFalse((tn1.Data == null) != (tn2.Data == null));
+                    if (tn1.Data != null && tn2.Data != null) {
+                        Assert.AreEqual(tn1.Length, tn2.Length);
+                        for (int i = 0; i < tn1.Length; ++i) {
+                            Assert.AreEqual(tn1.Data[i], tn2.Data[i]);
+                        }
                     }
                 } else {
                     Assert.Fail();

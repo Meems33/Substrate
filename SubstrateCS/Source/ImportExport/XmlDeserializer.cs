@@ -41,10 +41,8 @@ namespace Substrate.ImportExport {
 
             int numChildren = 0;
             while (!reader.EOF) {
-                reader.Read();
-
                 if (XmlNodeType.XmlDeclaration == reader.NodeType) {
-
+                    reader.Read();
                 } else if (XmlNodeType.Element == reader.NodeType) {
                     TagType childType = getTagType(reader.Name);
 
@@ -67,6 +65,8 @@ namespace Substrate.ImportExport {
                     }
 
                     ++numChildren;
+                } else {
+                    reader.Read();
                 }
             }
 
@@ -89,9 +89,13 @@ namespace Substrate.ImportExport {
                 List<string> gatheredNames = new List<String>();
                 List<TagNode> gatheredTags = new List<TagNode>();
 
-                while (!reader.EOF) {
+                // Right now are are pointing at the element that starts TAG_COMPOUND
+                // Need to move to the next element.
+                if (!reader.EOF) {
                     reader.Read();
+                }
 
+                while (!reader.EOF) {
                     if (reader.IsStartElement()) {
                         // Child...
                         TagType childType = getTagType(reader.Name);
@@ -115,8 +119,14 @@ namespace Substrate.ImportExport {
                         gatheredNames.Add(outName);
                     } else if (XmlNodeType.EndElement == reader.NodeType) {
                         // Children consume their own end elements so this must be ours
+                        if (getTagType(reader.Name) != TagType.TAG_COMPOUND) {
+                            throw new InvalidTagException();
+                        }
+
                         reader.ReadEndElement();
                         break;
+                    } else {
+                        reader.Read();
                     }
                 }
 
@@ -144,9 +154,13 @@ namespace Substrate.ImportExport {
             } else {
                 List<TagNode> gatheredTags = new List<TagNode>();
 
-                while (!reader.EOF) {
+                // Right now are are pointing at the element that starts TAG_LIST
+                // Need to move to the next element.
+                if (!reader.EOF) {
                     reader.Read();
+                }
 
+                while (!reader.EOF) {
                     if (reader.IsStartElement()) {
                         // Child...
                         TagType childType = getTagType(reader.Name);
@@ -169,8 +183,14 @@ namespace Substrate.ImportExport {
                         gatheredTags.Add(outTag);
                     } else if (XmlNodeType.EndElement == reader.NodeType) {
                         // Children consume their own end elements so this must be ours
+                        if (getTagType(reader.Name) != TagType.TAG_LIST) {
+                            throw new InvalidTagException();
+                        }
+
                         reader.ReadEndElement();
                         break;
+                    } else {
+                        reader.Read();
                     }
                 }
 
@@ -312,6 +332,7 @@ namespace Substrate.ImportExport {
 
                 case TagType.TAG_STRING:
                     // TODO convert to UTF-8?
+                    // TODO Strings are special... lookup null vs ""?
                     if (rawValue == null || rawValue.Trim().Length == 0) {
                         node = new TagNodeString();
                     } else {
@@ -322,7 +343,7 @@ namespace Substrate.ImportExport {
 
                 case TagType.TAG_INT_ARRAY:
                     if (rawValue == null || rawValue.Trim().Length == 0) {
-                        node = new TagNodeByteArray();
+                        node = new TagNodeIntArray();
                     } else {
                         int[] value;
                         

@@ -196,6 +196,7 @@ namespace Substrate.ImportExport {
                     break;
 
                 case TagType.TAG_STRING:
+                    // TODO Strings are special... lookup null vs ""?
                     if (tag.ToTagString().Data != null) {
                         byte[] bytes = Encoding.Default.GetBytes(tag.ToTagString().Data);
                         writer.WriteValue(Encoding.UTF8.GetString(bytes));
