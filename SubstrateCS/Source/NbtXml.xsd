@@ -2,8 +2,12 @@
 <xs:schema id="NbtXml"
      xmlns:xs="http://www.w3.org/2001/XMLSchema"
      elementFormDefault="unqualified">
-  <xs:attribute name="nbt_name" type="xs:string"></xs:attribute>
 
+  <!--xs:attribute name="nbt_name" type="xs:string"></xs:attribute-->
+  <xs:simpleType name="nbt_name">
+    <xs:restriction base="xs:string"></xs:restriction>
+  </xs:simpleType>
+  
   <xs:simpleType name="nbt_type">
     <xs:restriction base="xs:string">
       <xs:enumeration value="TAG_END"></xs:enumeration>
@@ -34,7 +38,7 @@
         </xs:restriction>
       </xs:simpleType>
       <xs:simpleType>
-        <xs:restriction base="xs:unsignedByte"></xs:restriction>
+        <xs:restriction base="xs:byte"></xs:restriction>
       </xs:simpleType>
     </xs:union>
   </xs:simpleType>
@@ -47,7 +51,7 @@
         </xs:restriction>
       </xs:simpleType>
       <xs:simpleType>
-        <xs:restriction base="xs:unsignedShort"></xs:restriction>
+        <xs:restriction base="xs:short"></xs:restriction>
       </xs:simpleType>
     </xs:union>
   </xs:simpleType>
@@ -60,7 +64,7 @@
         </xs:restriction>
       </xs:simpleType>
       <xs:simpleType>
-        <xs:restriction base="xs:unsignedInt"></xs:restriction>
+        <xs:restriction base="xs:int"></xs:restriction>
       </xs:simpleType>
     </xs:union>
   </xs:simpleType>
@@ -73,7 +77,7 @@
         </xs:restriction>
       </xs:simpleType>
       <xs:simpleType>
-        <xs:restriction base="xs:unsignedLong"></xs:restriction>
+        <xs:restriction base="xs:long"></xs:restriction>
       </xs:simpleType>
     </xs:union>
   </xs:simpleType>
@@ -120,7 +124,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="nbt_end">
-              <xs:attribute ref="nbt_name"></xs:attribute>
+              <xs:attribute name="name" type="nbt_name"></xs:attribute>
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -129,7 +133,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="nbt_byte">
-              <xs:attribute ref="nbt_name"></xs:attribute>
+              <xs:attribute name="name" type="nbt_name"></xs:attribute>
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -138,7 +142,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="nbt_short">
-              <xs:attribute ref="nbt_name"></xs:attribute>
+              <xs:attribute name="name" type="nbt_name"></xs:attribute>
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -147,7 +151,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="nbt_int">
-              <xs:attribute ref="nbt_name"></xs:attribute>
+              <xs:attribute name="name" type="nbt_name"></xs:attribute>
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -156,7 +160,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="nbt_long">
-              <xs:attribute ref="nbt_name"></xs:attribute>
+              <xs:attribute name="name" type="nbt_name"></xs:attribute>
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -165,7 +169,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="nbt_float">
-              <xs:attribute ref="nbt_name"></xs:attribute>
+              <xs:attribute name="name" type="nbt_name"></xs:attribute>
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -174,7 +178,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="nbt_double">
-              <xs:attribute ref="nbt_name"></xs:attribute>
+              <xs:attribute name="name" type="nbt_name"></xs:attribute>
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -183,7 +187,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="nbt_byte_array">
-              <xs:attribute ref="nbt_name"></xs:attribute>
+              <xs:attribute name="name" type="nbt_name"></xs:attribute>
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -192,7 +196,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="nbt_string">
-              <xs:attribute ref="nbt_name"></xs:attribute>
+              <xs:attribute name="name" type="nbt_name"></xs:attribute>
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -201,7 +205,7 @@
         <xs:complexType>
           <xs:complexContent>
             <xs:extension base="nbt_list">
-              <xs:attribute ref="nbt_name"></xs:attribute>
+              <xs:attribute name="name" type="nbt_name"></xs:attribute>
             </xs:extension>
           </xs:complexContent>
         </xs:complexType>
@@ -210,7 +214,7 @@
         <xs:complexType>
           <xs:complexContent>
             <xs:extension base="nbt_compound">
-              <xs:attribute ref="nbt_name"></xs:attribute>
+              <xs:attribute name="name" type="nbt_name"></xs:attribute>
             </xs:extension>
           </xs:complexContent>
         </xs:complexType>
@@ -223,7 +227,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="nbt_int_array">
-              <xs:attribute ref="nbt_name"></xs:attribute>
+              <xs:attribute name="name" type="nbt_name"></xs:attribute>
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -252,7 +256,7 @@
     <xs:complexType>
       <xs:complexContent>
         <xs:extension base="nbt_compound">
-          <xs:attribute ref="nbt_name"></xs:attribute>
+          <!--<xs:attribute name="name" type="nbt_name"></xs:attribute>-->
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>
