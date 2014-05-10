@@ -264,6 +264,8 @@ namespace XmlTester
             target.ByteArrayAsHex = true;
             doScalarTest(XmlTestScenario.TAG_BYTE_ARRAY_5_H);
             doScalarTest(XmlTestScenario.TAG_BYTE_ARRAY_6_H);
+
+            doScalarTest(XmlTestScenario.TAG_BYTE_ARRAY_7);
         }
 
         [TestMethod()]
@@ -296,9 +298,13 @@ namespace XmlTester
 
             // List with List inside
             doListTest(XmlTestScenario.TAG_LIST_5);
+            doListTest(XmlTestScenario.TAG_LIST_6);
 
             // List with Compound inside
-            doListTest(XmlTestScenario.TAG_LIST_6);
+            doListTest(XmlTestScenario.TAG_LIST_7);
+            doListTest(XmlTestScenario.TAG_LIST_8);
+
+            doListTest(XmlTestScenario.TAG_LIST_9);
         }
 
         [TestMethod()]
@@ -315,9 +321,13 @@ namespace XmlTester
 
             // Compound with List inside
             doCompoundTest(XmlTestScenario.TAG_COMPOUND_4);
+            doCompoundTest(XmlTestScenario.TAG_COMPOUND_5);
 
             // Compound with Compound inside
-            doCompoundTest(XmlTestScenario.TAG_COMPOUND_5);
+            doCompoundTest(XmlTestScenario.TAG_COMPOUND_6);
+            doCompoundTest(XmlTestScenario.TAG_COMPOUND_7);
+
+            doCompoundTest(XmlTestScenario.TAG_COMPOUND_8);
         }
 
         [TestMethod()]

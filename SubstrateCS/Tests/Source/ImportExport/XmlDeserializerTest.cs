@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using System.Xml.Schema;
 using System.IO;
 using System;
 
@@ -53,8 +54,19 @@ namespace XmlTester
         private XmlReaderSettings createSettings() {
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.IgnoreProcessingInstructions = true;
+            settings.ValidationType = ValidationType.Schema;
 
+            XmlSchemaSet sc = new XmlSchemaSet();
+
+            //settings.Schemas = sc;
+
+            settings.ValidationEventHandler += new ValidationEventHandler(ValidationCallBack);
             return settings;
+        }
+        
+        private static void ValidationCallBack(object sender, ValidationEventArgs e) {
+            Console.WriteLine("Validation Error: {0}", e.Message);
+            throw new Exception("rawr");
         }
 
         private void setInput(string str) {
@@ -106,7 +118,7 @@ namespace XmlTester
             // List
             node = new TagNodeList(TagType.TAG_SHORT);
             ((TagNodeList)node).Add(new TagNodeShort(3));
-            xml = "<TAG_LIST type=\"TAG_SHORT\"><TAG_SHORT>3</TAG_SHORT></TAG_LIST>";
+            xml = "<TAG_LIST type=\"TAG_SHORT\"><TAG_SHORT name=\"rawr\">3GG</TAG_SHORT></TAG_LIST>";
 
             setInput(xml, false);
             result = DeserializeStart(reader);
@@ -268,6 +280,8 @@ namespace XmlTester
             target.ByteArrayAsHex = true;
             doScalarTest(XmlTestScenario.TAG_BYTE_ARRAY_5_H);
             doScalarTest(XmlTestScenario.TAG_BYTE_ARRAY_6_H);
+
+            doScalarTest(XmlTestScenario.TAG_BYTE_ARRAY_7);
         }
 
         [TestMethod()]
@@ -300,9 +314,13 @@ namespace XmlTester
 
             // List with List inside
             doListTest(XmlTestScenario.TAG_LIST_5);
+            doListTest(XmlTestScenario.TAG_LIST_6);
 
             // List with Compound inside
-            doListTest(XmlTestScenario.TAG_LIST_6);
+            doListTest(XmlTestScenario.TAG_LIST_7);
+            doListTest(XmlTestScenario.TAG_LIST_8);
+
+            doListTest(XmlTestScenario.TAG_LIST_9);
         }
 
         [TestMethod()]
@@ -319,9 +337,13 @@ namespace XmlTester
 
             // Compound with List inside
             doCompoundTest(XmlTestScenario.TAG_COMPOUND_4);
+            doCompoundTest(XmlTestScenario.TAG_COMPOUND_5);
 
             // Compound with Compound inside
-            doCompoundTest(XmlTestScenario.TAG_COMPOUND_5);
+            doCompoundTest(XmlTestScenario.TAG_COMPOUND_6);
+            doCompoundTest(XmlTestScenario.TAG_COMPOUND_7);
+
+            doCompoundTest(XmlTestScenario.TAG_COMPOUND_8);
         }
 
         [TestMethod()]
@@ -346,7 +368,7 @@ namespace XmlTester
             doScalarTest(XmlTestScenario.TAG_INT_ARRAY_6_H);
         }
 
-        public void AssertEqual(TagNode expected, TagNode actual) {
+        public static void AssertEqual(TagNode expected, TagNode actual) {
             if (expected == null && actual == null) {
                 // OK
             } else if (expected == null) {

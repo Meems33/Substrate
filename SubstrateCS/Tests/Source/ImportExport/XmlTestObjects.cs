@@ -81,6 +81,7 @@ namespace XmlTester
         public static readonly XmlTestScenario TAG_BYTE_ARRAY_4;
         public static readonly XmlTestScenario TAG_BYTE_ARRAY_5_H;
         public static readonly XmlTestScenario TAG_BYTE_ARRAY_6_H;
+        public static readonly XmlTestScenario TAG_BYTE_ARRAY_7;
 
         public static readonly XmlTestScenario TAG_STRING_1;
         public static readonly XmlTestScenario TAG_STRING_2;
@@ -94,12 +95,18 @@ namespace XmlTester
         public static readonly XmlTestScenario TAG_LIST_4;
         public static readonly XmlTestScenario TAG_LIST_5;
         public static readonly XmlTestScenario TAG_LIST_6;
+        public static readonly XmlTestScenario TAG_LIST_7;
+        public static readonly XmlTestScenario TAG_LIST_8;
+        public static readonly XmlTestScenario TAG_LIST_9;
 
         public static readonly XmlTestScenario TAG_COMPOUND_1;
         public static readonly XmlTestScenario TAG_COMPOUND_2;
         public static readonly XmlTestScenario TAG_COMPOUND_3;
         public static readonly XmlTestScenario TAG_COMPOUND_4;
         public static readonly XmlTestScenario TAG_COMPOUND_5;
+        public static readonly XmlTestScenario TAG_COMPOUND_6;
+        public static readonly XmlTestScenario TAG_COMPOUND_7;
+        public static readonly XmlTestScenario TAG_COMPOUND_8;
 
         public static readonly XmlTestScenario TAG_INT_ARRAY_1;
         public static readonly XmlTestScenario TAG_INT_ARRAY_2;
@@ -455,6 +462,12 @@ namespace XmlTester
 
             TAG_BYTE_ARRAY_6_H = new XmlTestScenario(node, name, xml);
 
+            node = new TagNodeByteArray(null);
+            name = "name1";
+            xml = "<TAG_BYTE_ARRAY name=\"name1\" />";
+
+            TAG_BYTE_ARRAY_7 = new XmlTestScenario(node, name, xml);
+
             // ### TAG_STRING
             // No Attribute, No Value
             node = new TagNodeString();
@@ -530,6 +543,16 @@ namespace XmlTester
             // List with List inside
             node = new TagNodeList(TagType.TAG_LIST);
             TagNodeList tnl2 = new TagNodeList(TagType.TAG_BYTE);
+            ((TagNodeList)node).Add(tnl2);
+            name = null;
+            xml = "<TAG_LIST type=\"TAG_LIST\">"
+                    + "<TAG_LIST type=\"TAG_BYTE\" />"
+                     + "</TAG_LIST>";
+
+            TAG_LIST_5 = new XmlTestScenario(node, name, xml);
+
+            node = new TagNodeList(TagType.TAG_LIST);
+            tnl2 = new TagNodeList(TagType.TAG_BYTE);
             tnl2.Add(new TagNodeByte(7));
             ((TagNodeList)node).Add(tnl2);
             name = null;
@@ -539,11 +562,21 @@ namespace XmlTester
                       + "</TAG_LIST>"
                      + "</TAG_LIST>";
 
-            TAG_LIST_5 = new XmlTestScenario(node, name, xml);
+            TAG_LIST_6 = new XmlTestScenario(node, name, xml);
 
             // List with Compound inside
             node = new TagNodeList(TagType.TAG_COMPOUND);
             TagNodeCompound tnc = new TagNodeCompound();
+            ((TagNodeList)node).Add(tnc);
+            name = null;
+            xml = "<TAG_LIST type=\"TAG_COMPOUND\">"
+                    + "<TAG_COMPOUND />"
+                     + "</TAG_LIST>";
+
+            TAG_LIST_7 = new XmlTestScenario(node, name, xml);
+
+            node = new TagNodeList(TagType.TAG_COMPOUND);
+            tnc = new TagNodeCompound();
             tnc.Add("name2", new TagNodeByte(8));
             ((TagNodeList)node).Add(tnc);
             name = null;
@@ -553,7 +586,17 @@ namespace XmlTester
                       + "</TAG_COMPOUND>"
                      + "</TAG_LIST>";
 
-            TAG_LIST_6 = new XmlTestScenario(node, name, xml);
+            TAG_LIST_8 = new XmlTestScenario(node, name, xml);
+
+            // List with empty scalar inside
+            node = new TagNodeList(TagType.TAG_BYTE_ARRAY);
+            ((TagNodeList)node).Add(new TagNodeByteArray(null));
+            name = "name1";
+            xml = "<TAG_LIST name=\"name1\" type=\"TAG_BYTE_ARRAY\">"
+                      + "<TAG_BYTE_ARRAY />"
+                     + "</TAG_LIST>";
+
+            TAG_LIST_9 = new XmlTestScenario(node, name, xml);
 
             // ### TAG_COMPOUND
 
@@ -586,6 +629,17 @@ namespace XmlTester
             // Compound with List inside
             node = new TagNodeCompound();
             TagNodeList tnl = new TagNodeList(TagType.TAG_BYTE);
+            ((TagNodeCompound)node).Add("name2", tnl);
+            ((TagNodeCompound)node).Add("name3", new TagNodeByte(3));
+            name = "name1";
+            xml = "<TAG_COMPOUND name=\"name1\">"
+                + "<TAG_LIST name=\"name2\" type=\"TAG_BYTE\" />"
+                + "<TAG_BYTE name=\"name3\">3</TAG_BYTE></TAG_COMPOUND>";
+
+            TAG_COMPOUND_4 = new XmlTestScenario(node, name, xml);
+
+            node = new TagNodeCompound();
+            tnl = new TagNodeList(TagType.TAG_BYTE);
             tnl.Add(new TagNodeByte(2));
             ((TagNodeCompound)node).Add("name2", tnl);
             ((TagNodeCompound)node).Add("name3", new TagNodeByte(3));
@@ -594,11 +648,23 @@ namespace XmlTester
                 + "<TAG_LIST name=\"name2\" type=\"TAG_BYTE\"><TAG_BYTE>2</TAG_BYTE></TAG_LIST>"
                 + "<TAG_BYTE name=\"name3\">3</TAG_BYTE></TAG_COMPOUND>";
 
-            TAG_COMPOUND_4 = new XmlTestScenario(node, name, xml);
+            TAG_COMPOUND_5 = new XmlTestScenario(node, name, xml);
 
             // Compound with Compound inside
             node = new TagNodeCompound();
             TagNodeCompound tnc2 = new TagNodeCompound();
+            ((TagNodeCompound)node).Add("name2", tnc2);
+            ((TagNodeCompound)node).Add("name3", new TagNodeFloat(3.2f));
+            name = "name1";
+            xml = "<TAG_COMPOUND name=\"name1\">"
+                + "<TAG_COMPOUND name=\"name2\" />"
+                + "<TAG_FLOAT name=\"name3\">3.2</TAG_FLOAT>"
+                + "</TAG_COMPOUND>";
+
+            TAG_COMPOUND_6 = new XmlTestScenario(node, name, xml);
+
+            node = new TagNodeCompound();
+            tnc2 = new TagNodeCompound();
             tnc2.Add("name4", new TagNodeByte(4));
             tnc2.Add("name5", new TagNodeInt(5));
             ((TagNodeCompound)node).Add("name2", tnc2);
@@ -612,7 +678,17 @@ namespace XmlTester
                 + "<TAG_FLOAT name=\"name3\">3.2</TAG_FLOAT>"
                 + "</TAG_COMPOUND>";
 
-            TAG_COMPOUND_5 = new XmlTestScenario(node, name, xml);
+            TAG_COMPOUND_7 = new XmlTestScenario(node, name, xml);
+
+            // Compound with empty scalar inside
+            node = new TagNodeCompound();
+            tnl = new TagNodeList(TagType.TAG_BYTE_ARRAY);
+            ((TagNodeCompound)node).Add("name3", new TagNodeByteArray(null));
+            name = "name1";
+            xml = "<TAG_COMPOUND name=\"name1\">"
+                + "<TAG_BYTE_ARRAY name=\"name3\" /></TAG_COMPOUND>";
+
+            TAG_COMPOUND_8 = new XmlTestScenario(node, name, xml);
 
             // ### TAG_INT_ARRAY
 
