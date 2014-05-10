@@ -1,0 +1,266 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="NbtXml"
+     xmlns:xs="http://www.w3.org/2001/XMLSchema"
+     elementFormDefault="unqualified">
+  <xs:attribute name="nbt_name" type="xs:string"></xs:attribute>
+
+  <xs:simpleType name="nbt_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="TAG_END"></xs:enumeration>
+      <xs:enumeration value="TAG_BYTE"></xs:enumeration>
+      <xs:enumeration value="TAG_SHORT"></xs:enumeration>
+      <xs:enumeration value="TAG_INT"></xs:enumeration>
+      <xs:enumeration value="TAG_LONG"></xs:enumeration>
+      <xs:enumeration value="TAG_FLOAT"></xs:enumeration>
+      <xs:enumeration value="TAG_DOUBLE"></xs:enumeration>
+      <xs:enumeration value="TAG_BYTE_ARRAY"></xs:enumeration>
+      <xs:enumeration value="TAG_LIST"></xs:enumeration>
+      <xs:enumeration value="TAG_COMPOUND"></xs:enumeration>
+      <xs:enumeration value="TAG_INT_ARRAY"></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="nbt_end">
+    <xs:restriction base="xs:string">
+      <xs:length value="0"></xs:length>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="nbt_byte">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:hexBinary">
+          <xs:length value="1"></xs:length>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:unsignedByte"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
+  <xs:simpleType name="nbt_short">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:hexBinary">
+          <xs:maxLength value="2"></xs:maxLength>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:unsignedShort"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
+  <xs:simpleType name="nbt_int">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:hexBinary">
+          <xs:maxLength value="4"></xs:maxLength>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:unsignedInt"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
+  <xs:simpleType name="nbt_long">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:hexBinary">
+          <xs:maxLength value="8"></xs:maxLength>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:unsignedLong"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
+  <xs:simpleType name="nbt_float">
+    <xs:restriction base="xs:float"></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="nbt_double">
+    <xs:restriction base="xs:double"></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="nbt_byte_array">
+    <xs:restriction base="xs:string"></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="nbt_string">
+    <xs:restriction base="xs:string"></xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="nbt_list">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="TAG_END"></xs:element>
+      <xs:element ref="TAG_BYTE"></xs:element>
+      <xs:element ref="TAG_SHORT"></xs:element>
+      <xs:element ref="TAG_INT"></xs:element>
+      <xs:element ref="TAG_LONG"></xs:element>
+      <xs:element ref="TAG_FLOAT"></xs:element>
+      <xs:element ref="TAG_DOUBLE"></xs:element>
+      <xs:element ref="TAG_BYTE_ARRAY"></xs:element>
+      <xs:element ref="TAG_STRING"></xs:element>
+      <xs:element ref="TAG_LIST"></xs:element>
+      <xs:element ref="TAG_COMPOUND"></xs:element>
+      <xs:element ref="TAG_INT_ARRAY"></xs:element>
+    </xs:choice>
+    <xs:attribute name="type" type="nbt_type"></xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="nbt_compound">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <!-- Cannot figure out how to have as both a base class and have two versions
+            where "name" is optional or not -->
+      <xs:element name="TAG_END">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="nbt_end">
+              <xs:attribute ref="nbt_name"></xs:attribute>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="TAG_BYTE">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="nbt_byte">
+              <xs:attribute ref="nbt_name"></xs:attribute>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="TAG_SHORT">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="nbt_short">
+              <xs:attribute ref="nbt_name"></xs:attribute>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="TAG_INT">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="nbt_int">
+              <xs:attribute ref="nbt_name"></xs:attribute>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="TAG_LONG">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="nbt_long">
+              <xs:attribute ref="nbt_name"></xs:attribute>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="TAG_FLOAT">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="nbt_float">
+              <xs:attribute ref="nbt_name"></xs:attribute>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="TAG_DOUBLE">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="nbt_double">
+              <xs:attribute ref="nbt_name"></xs:attribute>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="TAG_BYTE_ARRAY">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="nbt_byte_array">
+              <xs:attribute ref="nbt_name"></xs:attribute>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="TAG_STRING">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="nbt_string">
+              <xs:attribute ref="nbt_name"></xs:attribute>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="TAG_LIST">
+        <xs:complexType>
+          <xs:complexContent>
+            <xs:extension base="nbt_list">
+              <xs:attribute ref="nbt_name"></xs:attribute>
+            </xs:extension>
+          </xs:complexContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="TAG_COMPOUND">
+        <xs:complexType>
+          <xs:complexContent>
+            <xs:extension base="nbt_compound">
+              <xs:attribute ref="nbt_name"></xs:attribute>
+            </xs:extension>
+          </xs:complexContent>
+        </xs:complexType>
+        <xs:unique name="uniqueNames">
+          <xs:selector xpath="TAG_COMPOUND"/>
+          <xs:field xpath="@name"/>
+        </xs:unique>
+      </xs:element>
+      <xs:element name="TAG_INT_ARRAY">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="nbt_int_array">
+              <xs:attribute ref="nbt_name"></xs:attribute>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  
+  <xs:simpleType name="nbt_int_array">
+    <xs:restriction base="xs:string"></xs:restriction>
+  </xs:simpleType>
+  
+  <xs:element name="TAG_END" type="nbt_end"></xs:element>
+  <xs:element name="TAG_BYTE" type="nbt_byte"></xs:element>
+  <xs:element name="TAG_SHORT" type="nbt_short"></xs:element>
+  <xs:element name="TAG_INT" type="nbt_int"></xs:element>
+  <xs:element name="TAG_LONG" type="nbt_long"></xs:element>
+  <xs:element name="TAG_FLOAT" type="xs:float"></xs:element>
+  <xs:element name="TAG_DOUBLE" type="xs:double"></xs:element>
+  
+  <xs:element name="TAG_BYTE_ARRAY" type="xs:string"></xs:element>
+  <xs:element name="TAG_STRING" type="xs:string"></xs:element>
+
+  <xs:element name="TAG_LIST" type="nbt_list"></xs:element>
+  
+  <xs:element name="TAG_COMPOUND">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="nbt_compound">
+          <xs:attribute ref="nbt_name"></xs:attribute>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <xs:unique name="uniqueNames2">
+      <xs:selector xpath="TAG_COMPOUND"/>
+      <xs:field xpath="@name"/>
+    </xs:unique>
+  </xs:element>
+  
+  <xs:element name="TAG_INT_ARRAY" id="NBT11" type="xs:string"></xs:element>
+</xs:schema>
