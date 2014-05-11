@@ -356,21 +356,21 @@ namespace XmlTester
             string result;
             SerializeScalar(writer, test.Node, test.Name);
             result = getResult();
-            Assert.AreEqual(test.Xml, result);
+            Assert.AreEqual(test.DestXml, result);
         }
 
         private void doListTest(XmlTestScenario test) {
             string result;
             SerializeList(writer, test.Node, test.Name);
             result = getResult();
-            Assert.AreEqual(test.Xml, result);
+            Assert.AreEqual(test.DestXml, result);
         }
 
         private void doCompoundTest(XmlTestScenario test) {
             string result;
             SerializeCompound(writer, test.Node, test.Name);
             result = getResult();
-            Assert.AreEqual(test.Xml, result);
+            Assert.AreEqual(test.DestXml, result);
         }
 
         private void SerializeStart(XmlWriter writer, TagNode node) {

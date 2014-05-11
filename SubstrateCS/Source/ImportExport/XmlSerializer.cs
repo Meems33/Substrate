@@ -8,23 +8,40 @@ using System.Xml;
 using Substrate.Nbt;
 
 namespace Substrate.ImportExport {
+
     /// <summary>
-    /// Serializes TagNodes to XML
+    /// Serializes TagNodes into XML
+    /// 
+    /// Note the following:
+    /// - It is assumed that TagNodeList and TagNodeCompound tags have proper internal
+    ///   data representions (not null and not containing null tag nodes).
+    /// - NBT format does not differentiate between "null" and empty objects. As a result,
+    ///   TagNodeByteArray, TagNodeIntArray, and TagNodeString will serialize into the same
+    ///   form for both when the internal data is null and the internal object is empty.
+    /// - The XmlBase class defines properties outlining whether certain tag nodes are
+    ///   serialized in decimal or hexadecimal form.
+    ///   
+    /// The XML format is described in NbtXml.xsd
     /// </summary>
     public class XmlSerializer : XmlBase {
 
         /// <summary>
         /// Creates an XmlSerializer
         /// </summary>
-        /// <param name="textWriter">The stream to write to</param>
         public XmlSerializer() {
         }
 
         /// <summary>
-        /// Serialize a TagNode to XML
+        /// Serializes a TagNode into XML using default XML settings.
+        ///
         /// </summary>
-        /// <param name="tag"></param>
-        public void Serialize(TextWriter writer, TagNode tag) {
+        /// <param name="writer">The stream to write to. Closed after use.</param>
+        /// <param name="tag">The TagNode to serialize</param>
+        public void Serialize(Stream writer, TagNode tag) {
+            if (writer == null || tag == null) {
+                throw new ArgumentNullException();
+            }
+
             XmlWriterSettings xmlSettings = new XmlWriterSettings();
             xmlSettings.Indent = true;
             xmlSettings.Encoding = System.Text.Encoding.UTF8;
@@ -34,40 +51,46 @@ namespace Substrate.ImportExport {
             try {
                 Serialize(xmlWriter, tag);
 
-                writer.Flush();
+                xmlWriter.Flush();
             } finally {
-                if (writer != null) {
-                    writer.Close();
+                if (xmlWriter != null) {
+                    xmlWriter.Close();
                 }
             }
         }
 
         /// <summary>
-        /// Serialize a TagNode to XML onto the XmlWriter
+        /// Serializes a TagNode into XML. The XmlWriter is
+        /// NOT closed upon completion.
         /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="tag"></param>
+        /// <param name="writer">The XMLWriter to use</param>
+        /// <param name="tag">The TagNode to serialize</param>
         public void Serialize(XmlWriter writer, TagNode tag) {
+            if (writer == null || tag == null) {
+                throw new ArgumentNullException();
+            }
+
             SerializeStart(writer, tag);
         }
 
         protected void SerializeStart(XmlWriter writer, TagNode tag) {
+            //Console.WriteLine("SerializeStart");
             bool writeHeader = !writer.Settings.OmitXmlDeclaration;
 
             if (writeHeader) {
                 writer.WriteStartDocument();
             }
 
-            if (tag != null) {
-                if (tag.GetTagType() == TagType.TAG_COMPOUND) {
-                    SerializeCompound(writer, tag as TagNodeCompound, null);
-                } else if (tag.GetTagType() == TagType.TAG_LIST) {
-                    SerializeList(writer, tag as TagNodeList, null);
-                } else {
-                    SerializeScalar(writer, tag, null);
-                }
-
+            if (tag.GetTagType() == TagType.TAG_COMPOUND) {
+                SerializeCompound(writer, tag as TagNodeCompound, null);
+            } else if (tag.GetTagType() == TagType.TAG_LIST) {
+                SerializeList(writer, tag as TagNodeList, null);
+            } else {
+                SerializeScalar(writer, tag, null);
             }
+
+            // Force the end element to show up
+            writer.WriteWhitespace("");
 
             if (writeHeader) {
                 writer.WriteEndDocument();
@@ -75,6 +98,7 @@ namespace Substrate.ImportExport {
         }
 
         protected void SerializeCompound(XmlWriter writer, TagNodeCompound tag, string name) {
+            //Console.WriteLine("SerializeCompound");
             writer.WriteStartElement(getTagName(tag));
 
             if (name != null) {
@@ -83,6 +107,10 @@ namespace Substrate.ImportExport {
 
             foreach (KeyValuePair<string, TagNode> pair in tag) {
                 TagNode item = pair.Value;
+
+                if (item == null) {
+                    throw new ArgumentNullException();
+                }
 
                 // Compounds give inner elements names
                 if (item.GetTagType() == TagType.TAG_COMPOUND) {
@@ -94,10 +122,14 @@ namespace Substrate.ImportExport {
                 }
             }
 
+            // Force the end element to show up
+            writer.WriteWhitespace("");
+
             writer.WriteEndElement();
         }
 
         protected void SerializeList(XmlWriter writer, TagNodeList tag, string name) {
+            //Console.WriteLine("SerializeList");
             writer.WriteStartElement(getTagName(tag));
 
             if (name != null) {
@@ -107,6 +139,10 @@ namespace Substrate.ImportExport {
             writer.WriteAttributeString("type", getTagName(tag.ValueType));
 
             foreach (TagNode item in tag) {
+                if (item == null) {
+                    throw new ArgumentNullException();
+                }
+
                 // Lists do not give inner elements names
                 if (item.GetTagType() == TagType.TAG_COMPOUND) {
                     SerializeCompound(writer, item as TagNodeCompound, null);
@@ -117,10 +153,14 @@ namespace Substrate.ImportExport {
                 }
             }
 
+            // Force the end element to show up
+            writer.WriteWhitespace("");
+
             writer.WriteEndElement();
         }
 
         protected void SerializeScalar(XmlWriter writer, TagNode tag, string name) {
+            //Console.WriteLine("SerializeScalar");
             writer.WriteStartElement(getTagName(tag));
 
             if (name != null) {
@@ -129,7 +169,8 @@ namespace Substrate.ImportExport {
 
             switch (tag.GetTagType()) {
                 case TagType.TAG_END:
-                    // We just write an empty tag
+                    // Force the end element to show up
+                    writer.WriteWhitespace("");
                     break;
 
                 case TagType.TAG_BYTE:
@@ -192,14 +233,19 @@ namespace Substrate.ImportExport {
                         }
 
                         writer.WriteValue(sb.ToString());
+                    } else {
+                        // Force the end element to show up
+                        writer.WriteWhitespace("");
                     }
                     break;
 
                 case TagType.TAG_STRING:
-                    // TODO Strings are special... lookup null vs ""?
                     if (tag.ToTagString().Data != null) {
                         byte[] bytes = Encoding.Default.GetBytes(tag.ToTagString().Data);
                         writer.WriteValue(Encoding.UTF8.GetString(bytes));
+                    } else {
+                        // Force the end element to show up
+                        writer.WriteWhitespace("");
                     }
                     break;
 
@@ -223,6 +269,9 @@ namespace Substrate.ImportExport {
                         }
 
                         writer.WriteValue(sb.ToString());
+                    } else {
+                        // Force the end element to show up
+                        writer.WriteWhitespace("");
                     }
                     break;
 

@@ -58,6 +58,7 @@ namespace XmlTester
 
             XmlSchemaSet sc = new XmlSchemaSet();
 
+            //sc.Add("", @"");
             //settings.Schemas = sc;
 
             settings.ValidationEventHandler += new ValidationEventHandler(ValidationCallBack);
@@ -118,7 +119,7 @@ namespace XmlTester
             // List
             node = new TagNodeList(TagType.TAG_SHORT);
             ((TagNodeList)node).Add(new TagNodeShort(3));
-            xml = "<TAG_LIST type=\"TAG_SHORT\"><TAG_SHORT name=\"rawr\">3GG</TAG_SHORT></TAG_LIST>";
+            xml = "<TAG_LIST type=\"TAG_SHORT\"><TAG_SHORT>3</TAG_SHORT></TAG_LIST>";
 
             setInput(xml, false);
             result = DeserializeStart(reader);
@@ -130,9 +131,11 @@ namespace XmlTester
         public void DeserializeTagEndTest() {
             // No Attribute
             doScalarTest(XmlTestScenario.TAG_END_1);
+            doScalarTest(XmlTestScenario.TAG_END_1_D);
 
             // Attribute
             doScalarTest(XmlTestScenario.TAG_END_2);
+            doScalarTest(XmlTestScenario.TAG_END_2_D);
         }
 
         [TestMethod()]
@@ -140,6 +143,7 @@ namespace XmlTester
         public void DeserializeTagByteTest() {
             // No Attribute, No Value
             doScalarTest(XmlTestScenario.TAG_BYTE_1);
+            doScalarTest(XmlTestScenario.TAG_BYTE_1_D);
 
             // No Attribute, Yes Value
             doScalarTest(XmlTestScenario.TAG_BYTE_2);
@@ -162,6 +166,7 @@ namespace XmlTester
         public void DeserializeTagShortTest() {
             // No Attribute, No Value
             doScalarTest(XmlTestScenario.TAG_SHORT_1);
+            doScalarTest(XmlTestScenario.TAG_SHORT_1_D);
 
             // No Attribute, Yes Value
             doScalarTest(XmlTestScenario.TAG_SHORT_2);
@@ -185,6 +190,7 @@ namespace XmlTester
         public void DeserializeTagIntTest() {
             // No Attribute, No Value
             doScalarTest(XmlTestScenario.TAG_INT_1);
+            doScalarTest(XmlTestScenario.TAG_INT_1_D);
 
             // No Attribute, Yes Value
             doScalarTest(XmlTestScenario.TAG_INT_2);
@@ -209,6 +215,7 @@ namespace XmlTester
         public void DeserializeTagLongTest() {
             // No Attribute, No Value
             doScalarTest(XmlTestScenario.TAG_LONG_1);
+            doScalarTest(XmlTestScenario.TAG_LONG_1_D);
 
             // No Attribute, Yes Value
             doScalarTest(XmlTestScenario.TAG_LONG_2);
@@ -233,6 +240,7 @@ namespace XmlTester
         public void DeserializeTagFloatTest() {
             // No Attribute, No Value
             doScalarTest(XmlTestScenario.TAG_FLOAT_1);
+            doScalarTest(XmlTestScenario.TAG_FLOAT_1_D);
 
             // No Attribute, Yes Value
             doScalarTest(XmlTestScenario.TAG_FLOAT_2);
@@ -249,6 +257,7 @@ namespace XmlTester
         public void DeserializeTagDoubleTest() {
             // No Attribute, No Value
             doScalarTest(XmlTestScenario.TAG_DOUBLE_1);
+            doScalarTest(XmlTestScenario.TAG_DOUBLE_1_D);
 
             // No Attribute, Yes Value
             doScalarTest(XmlTestScenario.TAG_DOUBLE_2);
@@ -268,6 +277,7 @@ namespace XmlTester
 
             // No Attribute, No Value
             doScalarTest(XmlTestScenario.TAG_BYTE_ARRAY_1);
+            doScalarTest(XmlTestScenario.TAG_BYTE_ARRAY_1_D);
 
             // No Attribute, Yes Value
             doScalarTest(XmlTestScenario.TAG_BYTE_ARRAY_2);
@@ -279,9 +289,11 @@ namespace XmlTester
             // Hex Tests
             target.ByteArrayAsHex = true;
             doScalarTest(XmlTestScenario.TAG_BYTE_ARRAY_5_H);
+            doScalarTest(XmlTestScenario.TAG_BYTE_ARRAY_5_HD);
             doScalarTest(XmlTestScenario.TAG_BYTE_ARRAY_6_H);
 
             doScalarTest(XmlTestScenario.TAG_BYTE_ARRAY_7);
+            doScalarTest(XmlTestScenario.TAG_BYTE_ARRAY_7_D);
         }
 
         [TestMethod()]
@@ -290,6 +302,7 @@ namespace XmlTester
             // No Attribute, No Value
             doScalarTest(XmlTestScenario.TAG_STRING_1);
             doScalarTest(XmlTestScenario.TAG_STRING_2);
+            doScalarTest(XmlTestScenario.TAG_STRING_2_D);
 
             // No Attribute, Yes Value
             doScalarTest(XmlTestScenario.TAG_STRING_3);
@@ -304,7 +317,9 @@ namespace XmlTester
         public void DeserializeTagListTest() {
             // No Attribute, No Value
             doListTest(XmlTestScenario.TAG_LIST_1);
+            doListTest(XmlTestScenario.TAG_LIST_1_D);
             doListTest(XmlTestScenario.TAG_LIST_2);
+            doListTest(XmlTestScenario.TAG_LIST_2_D);
 
             // No Attribute, Yes Value
             doListTest(XmlTestScenario.TAG_LIST_3);
@@ -314,13 +329,16 @@ namespace XmlTester
 
             // List with List inside
             doListTest(XmlTestScenario.TAG_LIST_5);
+            doListTest(XmlTestScenario.TAG_LIST_5_D);
             doListTest(XmlTestScenario.TAG_LIST_6);
 
             // List with Compound inside
             doListTest(XmlTestScenario.TAG_LIST_7);
+            doListTest(XmlTestScenario.TAG_LIST_7_D);
             doListTest(XmlTestScenario.TAG_LIST_8);
 
             doListTest(XmlTestScenario.TAG_LIST_9);
+            doListTest(XmlTestScenario.TAG_LIST_9_D);
         }
 
         [TestMethod()]
@@ -328,6 +346,7 @@ namespace XmlTester
         public void DeserializeTagCompoundTest() {
             // No Attribute, No Value
             doCompoundTest(XmlTestScenario.TAG_COMPOUND_1);
+            doCompoundTest(XmlTestScenario.TAG_COMPOUND_1_D);
 
             // No Attribute, Yes Value
             doCompoundTest(XmlTestScenario.TAG_COMPOUND_2);
@@ -337,13 +356,16 @@ namespace XmlTester
 
             // Compound with List inside
             doCompoundTest(XmlTestScenario.TAG_COMPOUND_4);
+            doCompoundTest(XmlTestScenario.TAG_COMPOUND_4_D);
             doCompoundTest(XmlTestScenario.TAG_COMPOUND_5);
 
             // Compound with Compound inside
             doCompoundTest(XmlTestScenario.TAG_COMPOUND_6);
+            doCompoundTest(XmlTestScenario.TAG_COMPOUND_6_D);
             doCompoundTest(XmlTestScenario.TAG_COMPOUND_7);
 
             doCompoundTest(XmlTestScenario.TAG_COMPOUND_8);
+            doCompoundTest(XmlTestScenario.TAG_COMPOUND_8_D);
         }
 
         [TestMethod()]
@@ -354,6 +376,7 @@ namespace XmlTester
 
             // No Attribute, No Value
             doScalarTest(XmlTestScenario.TAG_INT_ARRAY_1);
+            doScalarTest(XmlTestScenario.TAG_INT_ARRAY_1_D);
 
             // No Attribute, Yes Value
             doScalarTest(XmlTestScenario.TAG_INT_ARRAY_2);
@@ -365,6 +388,7 @@ namespace XmlTester
             // Hex tests
             target.IntArrayAsHex = true;
             doScalarTest(XmlTestScenario.TAG_INT_ARRAY_5_H);
+            doScalarTest(XmlTestScenario.TAG_INT_ARRAY_5_HD);
             doScalarTest(XmlTestScenario.TAG_INT_ARRAY_6_H);
         }
 
@@ -481,7 +505,7 @@ namespace XmlTester
             TagNode result;
             string name;
 
-            setInput(scenario.Xml, true);
+            setInput(scenario.SourceXml, true);
             DeserializeScalar(reader, out result, out name);
 
             Assert.AreEqual(scenario.Name, name);
@@ -492,7 +516,7 @@ namespace XmlTester
             TagNodeList result;
             string name;
 
-            setInput(scenario.Xml, true);
+            setInput(scenario.SourceXml, true);
             DeserializeList(reader, out result, out name);
 
             Assert.AreEqual(scenario.Name, name);
@@ -503,7 +527,7 @@ namespace XmlTester
             TagNodeCompound result;
             string name;
 
-            setInput(scenario.Xml, true);
+            setInput(scenario.SourceXml, true);
             DeserializeCompound(reader, out result, out name);
 
             Assert.AreEqual(scenario.Name, name);

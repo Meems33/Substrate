@@ -11,12 +11,37 @@ using Substrate.Nbt;
 
 namespace Substrate.ImportExport {
 
+    /// <summary>
+    /// Deserializes XML into NBT tags.
+    /// 
+    /// Note the following:
+    ///   - Null, empty, and XML elements with no content are deserialized using the 
+    ///     NBT tag's default constructors.
+    ///   - Unknown attributes are ignored
+    ///   - In order to properly deserialize XML, the appropriate hex properties must
+    ///     be set (see base class).
+    /// 
+    /// The XML format is described in NbtXml.xsd
+    /// </summary>
     public class XmlDeserializer : XmlBase {
 
+        /// <summary>
+        /// Creates an XmlDeserializer
+        /// </summary>
         public XmlDeserializer() {
         }
 
+        /// <summary>
+        /// Deserializes the given input stream into a TagNode using
+        /// default XmlReader settings. The stream is closed upon completion.
+        /// </summary>
+        /// <param name="inputStream">The input stream</param>
+        /// <returns>The resulting tag node</returns>
         public TagNode Deserialize(Stream inputStream) {
+            if (inputStream == null) {
+                throw new ArgumentNullException();
+            }
+
             XmlReaderSettings xmlSettings = new XmlReaderSettings();
             xmlSettings.IgnoreComments = true;
             xmlSettings.IgnoreProcessingInstructions = true;
@@ -32,7 +57,17 @@ namespace Substrate.ImportExport {
             }
         }
 
+        /// <summary>
+        /// Deserializes the XmlReader stream into a TagNode. The
+        /// XmlReader is NOT closed upon completion.
+        /// </summary>
+        /// <param name="reader">The XmlReader</param>
+        /// <returns>The deserialized TagNode</returns>
         public TagNode Deserialize(XmlReader reader) {
+            if (reader == null) {
+                throw new ArgumentNullException();
+            }
+
             return DeserializeStart(reader);
         }
 
@@ -75,6 +110,7 @@ namespace Substrate.ImportExport {
 
         // We just read a TAG_COMPOUND
         protected void DeserializeCompound(XmlReader reader, out TagNodeCompound node, out string name) {
+            //Console.WriteLine("DeserializeCompound");
             TagType type = getTagType(reader.Name);
 
             if (TagType.TAG_COMPOUND != type) {
@@ -85,6 +121,9 @@ namespace Substrate.ImportExport {
 
             if (reader.IsEmptyElement) {
                 node = new TagNodeCompound();
+
+                // Move on to the next element
+                reader.Read();
             } else {
                 List<string> gatheredNames = new List<String>();
                 List<TagNode> gatheredTags = new List<TagNode>();
@@ -139,6 +178,7 @@ namespace Substrate.ImportExport {
         }
 
         protected void DeserializeList(XmlReader reader, out TagNodeList node, out string name) {
+            //Console.WriteLine("DeserializeList");
             TagType type = getTagType(reader.Name);
 
             if (TagType.TAG_LIST != type) {
@@ -151,11 +191,15 @@ namespace Substrate.ImportExport {
 
             if (reader.IsEmptyElement) {
                 node = new TagNodeList(innerTypeTag);
+
+                // Move on to the next element
+                reader.Read();
             } else {
                 List<TagNode> gatheredTags = new List<TagNode>();
 
                 // Right now are are pointing at the element that starts TAG_LIST
                 // Need to move to the next element.
+
                 if (!reader.EOF) {
                     reader.Read();
                 }
@@ -203,8 +247,7 @@ namespace Substrate.ImportExport {
         }
 
         protected void DeserializeScalar(XmlReader reader, out TagNode node, out string name) {
-            // TODO add validation
-
+            //Console.WriteLine("DeserializeScalar");
             TagType type = getTagType(reader.Name);
 
             // Let's read the attr if it exists
@@ -331,8 +374,6 @@ namespace Substrate.ImportExport {
                     break;
 
                 case TagType.TAG_STRING:
-                    // TODO convert to UTF-8?
-                    // TODO Strings are special... lookup null vs ""?
                     if (rawValue == null || rawValue.Trim().Length == 0) {
                         node = new TagNodeString();
                     } else {
@@ -372,7 +413,10 @@ namespace Substrate.ImportExport {
             string rt = null;
 
             if (reader.IsEmptyElement) {
-                return rt;
+                // Move on to the next element
+                reader.Read();
+
+                return null;
             }
 
             while (!reader.EOF) {
